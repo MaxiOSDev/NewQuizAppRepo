@@ -8,7 +8,7 @@
 
 import Foundation
 import GameKit
-
+// Object with necessary stored properties
 struct Trivia {
     
     let question: String
@@ -18,7 +18,7 @@ struct Trivia {
     
     
 }
-
+// Array of instances of object Trivia
 var questions: [Trivia] = [Trivia(question: "This was the only US President to serve more than two consecutive terms.",
                                   answers: ["George Washington","Franklin D. Roosevelt","Franklin D. Roosevelt","Andrew Jackson"], correctAnswer: 2),
                            Trivia(question: "Which of the following countries has the most residents?",
@@ -40,25 +40,10 @@ var questions: [Trivia] = [Trivia(question: "This was the only US President to s
                            Trivia(question: "Which of these countries won the most medals in the 2012 Summer Games?",
                                   answers: ["France","Germany","Japan","Great Britian"], correctAnswer: 4)]
 
-//var previousIndex = 0
-////
-////func randomQuestion() -> Int {
-////    let unasignedArrayCount = UInt32(questions.count)
-////    let unasignedRandomNumber = arc4random_uniform(unasignedArrayCount)
-////    var randomNumber = 0
-////    
-////    repeat {
-////        randomNumber = Int(unasignedRandomNumber)
-////    } while randomNumber == previousIndex
-////    
-////    previousIndex = randomNumber
-////    
-////    return questions[randomNumber]
-////}
-//
 
+// New Array that will hold copy of old one
 var trivia: [Trivia] = []
-
+// Helper Method to reset the questions
 func resetTrivia() {
     trivia = []
     for question in questions {

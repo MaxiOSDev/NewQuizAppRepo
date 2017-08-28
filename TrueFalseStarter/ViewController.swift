@@ -92,6 +92,7 @@ class ViewController: UIViewController {
         
         loadNextRoundWithDelay(seconds: 2)
         
+        // Need way to only leave active the button that was selected and make the rest inactive.
         
         
     }

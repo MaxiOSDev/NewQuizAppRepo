@@ -8,9 +8,10 @@
 
 
 import UIKit
-
-
+// InterfaceBuilder Designable
 @IBDesignable
+
+
 // SubClass of UIButton so it shows up in my attributes inspecter in the storyboard
 class RoundButton: UIButton {
     // CornerRadius
