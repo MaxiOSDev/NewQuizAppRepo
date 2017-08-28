@@ -85,6 +85,7 @@ class ViewController: UIViewController {
             correctQuestions += 1
             questionField.text = "Correct!"
         } else {
+            // Display the correct answer when an incorrect
             questionField.text = "Sorry, wrong answer!\n the correct answer is \(trivia[indexOfSelectedQuestion].answers[correctAnswer - 1])"
         }
         trivia.remove(at: indexOfSelectedQuestion)
