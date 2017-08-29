@@ -20,14 +20,15 @@ class ViewController: UIViewController {
     var gameSound: SystemSoundID = 0
     
     
-    
+    //Outlets of Labels and Buttons
     @IBOutlet weak var questionField: UILabel!
+    @IBOutlet weak var resultLabel: UILabel!
     @IBOutlet weak var trueButton: UIButton!
     @IBOutlet weak var falseButton: UIButton!
     @IBOutlet weak var option3: UIButton!
     @IBOutlet weak var option4: UIButton!
-   @IBOutlet weak var playAgainButton: UIButton!
-    
+    @IBOutlet weak var playAgainButton: UIButton!
+    @IBOutlet weak var nextQuestion: RoundButton!
     
     
     
@@ -46,8 +47,9 @@ class ViewController: UIViewController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-    
+
     func displayQuestion() {
+        // Displays different question at start of each round without repeating
         indexOfSelectedQuestion = (Int(arc4random_uniform(UInt32(trivia.count))))
         let questionDictionary = trivia[indexOfSelectedQuestion]
         questionField.text = questionDictionary.question
@@ -56,8 +58,16 @@ class ViewController: UIViewController {
         option3.setTitle(questionDictionary.answers[2], for: UIControlState.normal)
         option4.setTitle(questionDictionary.answers[3], for: UIControlState.normal)
         playAgainButton.isHidden = true
+        
+        // Array of buttons to increment through for enabling buttons
+        let buttonsArray = [trueButton, falseButton, option3, option4]
+        for button in buttonsArray {
+            button?.isEnabled = true
+        }
+ 
     }
     
+
     func displayScore() {
         // Hide the answer buttons
         trueButton.isHidden = true
@@ -79,22 +89,26 @@ class ViewController: UIViewController {
         
         let selectedQuestionDict = trivia[indexOfSelectedQuestion]
         let correctAnswer = selectedQuestionDict.correctAnswer
-        
+        let buttonsArray = [trueButton, falseButton, option3, option4]
+        // Checking to see if they senders choice is correct or incorrect
         if (sender === trueButton &&  correctAnswer == 1) || (sender === falseButton && correctAnswer == 2)
         || (sender === option3 && correctAnswer == 3) || (sender === option4 && correctAnswer == 4) {
             correctQuestions += 1
-            questionField.text = "Correct!"
+            resultLabel.textColor = UIColor.white
+            resultLabel.text = "Correct!"
         } else {
             // Display the correct answer when an incorrect
-            questionField.text = "Sorry, wrong answer!\n the correct answer is \(trivia[indexOfSelectedQuestion].answers[correctAnswer - 1])"
+            resultLabel.textColor = UIColor.orange
+            resultLabel.text = "Sorry, incorrect! The correct answer is\n \(trivia[indexOfSelectedQuestion].answers[correctAnswer - 1])"
         }
         trivia.remove(at: indexOfSelectedQuestion)
         
-        loadNextRoundWithDelay(seconds: 2)
-        
-        // Need way to only leave active the button that was selected and make the rest inactive.
-        
-        
+        // Increment through buttons array to not have other answer choices enabled
+        for button in buttonsArray {
+            if sender != button {
+                button?.isEnabled = false
+            }
+        }
     }
     
     func nextRound() {
@@ -104,7 +118,12 @@ class ViewController: UIViewController {
         } else {
             // Continue game
             displayQuestion()
+            resultLabel.text = nil
         }
+    }
+    
+    @IBAction func proximoQuestionButton(_ sender: RoundButton) {
+        nextRound()
     }
     
     @IBAction func playAgain() {
@@ -119,9 +138,7 @@ class ViewController: UIViewController {
         nextRound()
         
     }
-    
 
-    
     // MARK: Helper Methods
     
     func loadNextRoundWithDelay(seconds: Int) {
