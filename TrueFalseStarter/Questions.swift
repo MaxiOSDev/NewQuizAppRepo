@@ -54,9 +54,3 @@ func resetTrivia() {
 
 
 
-
-
-
-
-
-

@@ -9,16 +9,22 @@
 import UIKit
 import GameKit
 import AudioToolbox
+import AVFoundation
+
 
 class ViewController: UIViewController {
     
+    let incorrectSystemSoundID: SystemSoundID = 1332
+    let correctSystemSoundID: SystemSoundID = 1327
     let questionsPerRound = 4
     var questionsAsked = 0
     var correctQuestions = 0
     var indexOfSelectedQuestion: Int = 0
-    
+    var seconds = 15
+    var timer = Timer()
+    var isTimerRunning = false
     var gameSound: SystemSoundID = 0
-    
+
     
     //Outlets of Labels and Buttons
     @IBOutlet weak var questionField: UILabel!
@@ -29,6 +35,7 @@ class ViewController: UIViewController {
     @IBOutlet weak var option4: UIButton!
     @IBOutlet weak var playAgainButton: UIButton!
     @IBOutlet weak var nextQuestion: RoundButton!
+    @IBOutlet weak var timerLabel: UILabel!
     
     
     
@@ -39,13 +46,41 @@ class ViewController: UIViewController {
         playGameStartSound()
         resetTrivia()
         displayQuestion()
-
-        
+        runTimer()
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    func runTimer() {
+        timer = Timer.scheduledTimer(timeInterval: 1, target: self,   selector: (#selector(ViewController.updateTimer)), userInfo: nil, repeats: true)
+    }
+    
+    func updateTimer() {
+        if seconds < 1 { //This will decrement(count down)the seconds.
+            timer.invalidate()
+            timerLabel.textColor = UIColor.white
+            resultLabel.textColor = UIColor.orange
+            resultLabel.text = "YOU RAN OUT OF TIME"
+            Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(myTimerTick), userInfo: nil, repeats: false)
+        } else if seconds <= 5 {
+            timerLabel.textColor = UIColor.red
+            seconds -= 1
+            timerLabel.text = "\(seconds)"
+        } else {
+            seconds -= 1
+            timerLabel.text = "\(seconds)" //This will update the label.
+        }
+        
+    }
+    
+    func myTimerTick() {
+        trueButton.isEnabled = false
+        falseButton.isEnabled = false
+        option3.isEnabled = false
+        option4.isEnabled = false
     }
 
     func displayQuestion() {
@@ -74,9 +109,12 @@ class ViewController: UIViewController {
         falseButton.isHidden = true
         option3.isHidden = true
         option4.isHidden = true
+        timerLabel.isHidden = true
         
         // Display play again button
         playAgainButton.isHidden = false
+        nextQuestion.isHidden = true
+        resultLabel.isHidden = true
         
         questionField.text = "Way to go!\nYou got \(correctQuestions) out of \(questionsPerRound) correct!"
         
@@ -94,11 +132,15 @@ class ViewController: UIViewController {
         if (sender === trueButton &&  correctAnswer == 1) || (sender === falseButton && correctAnswer == 2)
         || (sender === option3 && correctAnswer == 3) || (sender === option4 && correctAnswer == 4) {
             correctQuestions += 1
+            timer.invalidate()
             resultLabel.textColor = UIColor.white
             resultLabel.text = "Correct!"
+            AudioServicesPlaySystemSound(correctSystemSoundID)
         } else {
             // Display the correct answer when an incorrect
+            timer.invalidate()
             resultLabel.textColor = UIColor.orange
+            AudioServicesPlaySystemSound(incorrectSystemSoundID)
             resultLabel.text = "Sorry, incorrect! The correct answer is\n \(trivia[indexOfSelectedQuestion].answers[correctAnswer - 1])"
         }
         trivia.remove(at: indexOfSelectedQuestion)
@@ -115,15 +157,22 @@ class ViewController: UIViewController {
         if questionsAsked == questionsPerRound {
             // Game is over
             displayScore()
+            
         } else {
             // Continue game
             displayQuestion()
             resultLabel.text = nil
+            runTimer()
         }
     }
     
     @IBAction func proximoQuestionButton(_ sender: RoundButton) {
-        nextRound()
+        loadNextRoundWithDelay(seconds: 0)
+        timer.invalidate()
+        seconds = 15
+        timerLabel.text = "\(seconds)"
+        updateTimer()
+        
     }
     
     @IBAction func playAgain() {
@@ -132,6 +181,9 @@ class ViewController: UIViewController {
         falseButton.isHidden = false
         option3.isHidden = false
         option4.isHidden = false
+        nextQuestion.isHidden = false
+        resultLabel.isHidden = false
+        timerLabel.isHidden = false
         questionsAsked = 0
         correctQuestions = 0
         resetTrivia()
