@@ -6,21 +6,25 @@
 //  Copyright © 2016 Treehouse. All rights reserved.
 //
 
+
+
 import UIKit
 import GameKit
 import AudioToolbox
+// Apple's own sounds
 import AVFoundation
 
 
 class ViewController: UIViewController {
     
-    let incorrectSystemSoundID: SystemSoundID = 1332
-    let correctSystemSoundID: SystemSoundID = 1327
+    let incorrectSystemSoundID: SystemSoundID = 1332 // Sounds have id's within the AVFoundation framework
+    let correctSystemSoundID: SystemSoundID = 1327 // Sounds have id's within the AVFoundation framework
     let questionsPerRound = 4
     var questionsAsked = 0
     var correctQuestions = 0
     var indexOfSelectedQuestion: Int = 0
     var seconds = 15
+    // Timer variable
     var timer = Timer()
     var isTimerRunning = false
     var gameSound: SystemSoundID = 0
@@ -55,21 +59,23 @@ class ViewController: UIViewController {
     }
     
     func runTimer() {
+        // Run Timer
         timer = Timer.scheduledTimer(timeInterval: 1, target: self,   selector: (#selector(ViewController.updateTimer)), userInfo: nil, repeats: true)
     }
     
     func updateTimer() {
-        if seconds < 1 { //This will decrement(count down)the seconds.
+        // Update Timer
+        if seconds < 1 { // If seconds is less than 1 second aka 0, the following will occur
             timer.invalidate()
             timerLabel.textColor = UIColor.white
             resultLabel.textColor = UIColor.orange
             resultLabel.text = "YOU RAN OUT OF TIME"
             Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(myTimerTick), userInfo: nil, repeats: false)
-        } else if seconds <= 5 {
+        } else if seconds <= 5 { // else if statment so the color warns the player that the timer is almost done
             timerLabel.textColor = UIColor.red
             seconds -= 1
             timerLabel.text = "\(seconds)"
-        } else {
+        } else { // regular countdown
             seconds -= 1
             timerLabel.text = "\(seconds)" //This will update the label.
         }
@@ -77,6 +83,7 @@ class ViewController: UIViewController {
     }
     
     func myTimerTick() {
+        // So buttons are not enabled during func: updateTimer() if ran out of time
         trueButton.isEnabled = false
         falseButton.isEnabled = false
         option3.isEnabled = false
@@ -104,17 +111,17 @@ class ViewController: UIViewController {
     
 
     func displayScore() {
-        // Hide the answer buttons
+        // Hide the answer buttons and labels that need to be hidden
         trueButton.isHidden = true
         falseButton.isHidden = true
         option3.isHidden = true
         option4.isHidden = true
         timerLabel.isHidden = true
-        
-        // Display play again button
-        playAgainButton.isHidden = false
         nextQuestion.isHidden = true
         resultLabel.isHidden = true
+        // Display play again button
+        playAgainButton.isHidden = false
+      
         
         questionField.text = "Way to go!\nYou got \(correctQuestions) out of \(questionsPerRound) correct!"
         
@@ -132,18 +139,20 @@ class ViewController: UIViewController {
         if (sender === trueButton &&  correctAnswer == 1) || (sender === falseButton && correctAnswer == 2)
         || (sender === option3 && correctAnswer == 3) || (sender === option4 && correctAnswer == 4) {
             correctQuestions += 1
-            timer.invalidate()
+            timer.invalidate() // stops timer
             resultLabel.textColor = UIColor.white
             resultLabel.text = "Correct!"
+            // Sound when correct
             AudioServicesPlaySystemSound(correctSystemSoundID)
         } else {
             // Display the correct answer when an incorrect
             timer.invalidate()
             resultLabel.textColor = UIColor.orange
+            // Sound when incorrect
             AudioServicesPlaySystemSound(incorrectSystemSoundID)
-            resultLabel.text = "Sorry, incorrect! The correct answer is\n \(trivia[indexOfSelectedQuestion].answers[correctAnswer - 1])"
+            resultLabel.text = "Sorry, incorrect! The correct answer is\n \(trivia[indexOfSelectedQuestion].answers[correctAnswer - 1])" // displays correct answer
         }
-        trivia.remove(at: indexOfSelectedQuestion)
+        trivia.remove(at: indexOfSelectedQuestion) // removes last question so it doesn't repeat
         
         // Increment through buttons array to not have other answer choices enabled
         for button in buttonsArray {
@@ -161,14 +170,16 @@ class ViewController: UIViewController {
         } else {
             // Continue game
             displayQuestion()
+            // This resets results label to blank aka nil
             resultLabel.text = nil
+            // This runs timer at the start of every round
             runTimer()
         }
     }
     
-    @IBAction func proximoQuestionButton(_ sender: RoundButton) {
-        loadNextRoundWithDelay(seconds: 0)
-        timer.invalidate()
+    @IBAction func proximoQuestionButton(_ sender: RoundButton) { // proximo is next in spanish.
+        loadNextRoundWithDelay(seconds: 0) // I don't want a delay could of also just used nextRound(), experimented quite a bit.
+        timer.invalidate() // stops timer
         seconds = 15
         timerLabel.text = "\(seconds)"
         updateTimer()
@@ -176,7 +187,7 @@ class ViewController: UIViewController {
     }
     
     @IBAction func playAgain() {
-        // Show the answer buttons
+        // Show the answer buttons and labels
         trueButton.isHidden = false
         falseButton.isHidden = false
         option3.isHidden = false
@@ -186,12 +197,12 @@ class ViewController: UIViewController {
         timerLabel.isHidden = false
         questionsAsked = 0
         correctQuestions = 0
-        resetTrivia()
-        nextRound()
+        resetTrivia() // resets questions
+        nextRound() // plays next round
         
     }
 
-    // MARK: Helper Methods
+    // MARK: Helper Methods part of starter files
     
     func loadNextRoundWithDelay(seconds: Int) {
         // Converts a delay in seconds to nanoseconds as signed 64 bit integer

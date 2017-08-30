@@ -8,6 +8,7 @@
 
 import Foundation
 import GameKit
+
 // Object with necessary stored properties
 struct Trivia {
     
@@ -20,7 +21,7 @@ struct Trivia {
 }
 // Array of instances of object Trivia
 var questions: [Trivia] = [Trivia(question: "This was the only US President to serve more than two consecutive terms.",
-                                  answers: ["George Washington","Franklin D. Roosevelt","Franklin D. Roosevelt","Andrew Jackson"], correctAnswer: 2),
+                                  answers: ["George Washington","Franklin D. Roosevelt","Andrew Garfield","Andrew Jackson"], correctAnswer: 2),
                            Trivia(question: "Which of the following countries has the most residents?",
                                   answers: ["Nigeria","Russia","Iran","Vietnam"], correctAnswer: 1),
                            Trivia(question: "In what year was the United Nations founded?",
